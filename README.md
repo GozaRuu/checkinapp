@@ -11,7 +11,7 @@ In another command-line instance open your MongoDB system on port 27018 (default
 `mongod --dbpath=projects/mongodbserver`
 Make sure to keep this server running
 
-Back to the first commandline-instance run:
+Back to the first command-line instance run:
 `npm start` to start the NodeJs server
 By default, the server will be running at: `localhost:3000`
 
@@ -30,5 +30,14 @@ Get request at `/reserve/:passengerPassportNumber/:seatNumber` will try to bind 
 Get request at `/reserve/random/:passengerPassportNumber` will return bind a passenger to a random available seat.
 
 ---
+
+# Add data to the database 
+Open mogodb shell: open a command-line instance by running :
+`mongo`
+then type:
+`db.use checkinapp`
+you can add data folowing this example:
+Add a seat: `db.seats.insertOne({number: "N88", price: "454", available: true})`
+Add a passenger: `db.passengers.insertOne({passportNumber: "TN78787", name: "kais", age: "24", checkin: true, seat: "", paid :false})`
 
 # STILL IN DEVELOPMENT
