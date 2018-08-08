@@ -23,7 +23,7 @@ var passengerSchema = new Schema({
     seat: {
         type: String
     },
-    paidSeat: {
+    paid: {
         type: Boolean
     }
 }, {
