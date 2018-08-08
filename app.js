@@ -3,6 +3,17 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mongoose = require('mongoose');
+
+//connect to MongoDB
+var url = 'mongodb://localhost:27017/checkinapp';
+mongoose.connect(url);
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function () {
+    // connection successful
+    console.log("Connected correctly to database server");
+});
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
