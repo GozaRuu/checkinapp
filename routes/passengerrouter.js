@@ -10,6 +10,8 @@ passengerRouter.use(bodyParser.json());
 //add a passenger in Passengers
 passengerRouter.route('/')
 .post(function (req, res, next) {
+    req.body.paid = false;
+    req.body.seat = '';
     Passengers.create(req.body, function (err, passenger) {
         if (err) {
             console.log('Error: Passenger not added');
@@ -22,7 +24,7 @@ passengerRouter.route('/')
             var id = passenger._id;
             res.json({
                 sucess: true,
-                passenger: id
+                passenger: passenger.passportNumber
             });
         }
 

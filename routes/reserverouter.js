@@ -8,6 +8,7 @@ var Passengers = require('../models/passengers');
 var reserveRouter = express.Router();
 reserveRouter.use(bodyParser.json());
 
+
 //reserve a seat for a paid-checkin passenger
 reserveRouter.route('/:passId/:seatId')
 .get(function (req, res, next) {
@@ -28,26 +29,23 @@ reserveRouter.route('/:passId/:seatId')
                             $set: {seat : req.params.seatId}
                         }, {
                             new: true
-                        }, function (err, passenger) {
+                        }, function (err, passenger1) {
                             if (err) throw err;
-                            res.json({
-                                sucess: true,
-                                passenger: passenger.passportNumber
+                            //update the seat
+                            Seats.findOneAndUpdate({number: req.params.seatId}, {
+                                $set: {available : false}
+                            }, {
+                                new: true
+                            }, function (err, seat1) {
+                                if (err) throw err;
+                                res.json({
+                                    sucess: true,
+                                    passenger: passenger1.passportNumber,
+                                    seat: seat1.number
+                                });
                             });
                         });
 
-                        //update the seat
-                        Seats.findOneAndUpdate({number: req.params.seatId}, {
-                            $set: {available : false}
-                        }, {
-                            new: true
-                        }, function (err, seat) {
-                            if (err) throw err;
-                            res.json({
-                                sucess: true,
-                                seat: seat.number
-                            });
-                        });
 
                         //set timer (3min) to undo the update if the passenger didn't pay
 
@@ -63,28 +61,23 @@ reserveRouter.route('/:passId/:seatId')
                                         new: true
                                     }, function (err, passenger) {
                                         if (err) throw err;
-                                        res.json({
-                                            sucess: false,
-                                            error: "passenger didn't pay for reservation seat",
-                                            passenger: req.params.passId,
-                                            seat: req.params.seatId
+                                        //make the seat availble
+                                        Seats.findOneAndUpdate({number: req.params.seatId}, {
+                                            $set: {available : true}
+                                        }, {
+                                            new: true
+                                        }, function (err, seat) {
+                                            if (err) throw err;
+                                            res.json({
+                                                sucess: false,
+                                                error: "passenger didn't pay for reservation seat, therefore the seat is available.",
+                                                passenger: req.params.passId,
+                                                seat: req.params.seatId
+                                            });
                                         });
+
                                     });
 
-                                    //make the seat availble
-                                    Seats.findOneAndUpdate({number: req.params.seatId}, {
-                                        $set: {available : true}
-                                    }, {
-                                        new: true
-                                    }, function (err, seat) {
-                                        if (err) throw err;
-                                        res.json({
-                                            sucess: false,
-                                            error: "passenger didn't pay for reservation seat",
-                                            passenger: req.params.passId,
-                                            seat: req.params.seatId
-                                        });
-                                    });
                                 } else {
                                     res.json({
                                         sucess: true,
@@ -94,7 +87,7 @@ reserveRouter.route('/:passId/:seatId')
                                     });
                                 }
 
-                            }
+                            });
                         }, 180000);
 
                     } else {
@@ -125,24 +118,51 @@ reserveRouter.route('/:passId/:seatId')
 });
 
 
-
 //reserve a random seat for a free-checkin passenger
+reserveRouter.route('/random/:passId')
+.get(function (req, res, next) {
+    //get all available seat numbers
+    try {
+        var availbleSeats = [];
+        Seats.find({}, function (err, seat) {
+            if (err) throw err;
+            if(seat.availble){
+                availbleSeats.push(seat.number);
+            }
+        });
 
-// try {
-//     //get all seat numbers available
-//     reserveRouter.route('/:passId/')
-//     .get(function (req, res, next) {
-//         Seats.find({}, function (err, seats) {
-//             if (err) throw err;
-//         });
-//     });
-// } catch (err) {
-//     console.log('Error: Reservation not completed');
-//     res.json({
-//         sucess: false,
-//         error: JSON.stringify(err)
-//     });
-// }
+        if(availbleSeats != []) {
+            //assaign random seat to passenger
+            var seatChosen = availbleSeats[ Math.floor( Math.random()*availbleSeats.length ) ];
+            Passengers.findOneAndUpdate({passportNumber: req.params.passId}, {
+                $set: { seat : seatChosen }
+            }, {
+                new: true
+            }, function (err, passenger) {
+                if (err) throw err;
+                res.json({
+                    sucess: true,
+                    passenger: passenger.passportNumber,
+                    seat: seatChosen
+                });
+            });
+        } else {
+            res.json({
+                sucess: false,
+                error: "No seats availble"
+            });
+        };
+
+    } catch (err) {
+        console.log('Error: Reservation not completed');
+        res.json({
+            sucess: false,
+            error: JSON.stringify(err)
+        });
+    };
+
+});
+
 
 
 module.exports = reserveRouter;
