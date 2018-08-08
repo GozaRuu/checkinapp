@@ -1,10 +1,10 @@
 # checkinapp
-Nodejs, MongoDB, Express, and Mongoose backend application to handle check-in of passenger at an airport.
+Nodejs, MongoDB, Express, and Mongoose backend application to handle check-in of passengers at an airport.
 
 
 # install
 Your system should have NodeJs, NPM, and MongoDB installed.
-After cloning the repo open a commandline instance and run:
+After cloning the repo open a command-line instance and run:
 `npm install`
 
 In another command-line instance open your MongoDB system on port 27018 (default) in a new folder of your choice:
@@ -15,7 +15,7 @@ Back to the first commandline-instance run:
 `npm start` to start the NodeJs server
 By default, the server will be running at: `localhost:3000`
 
-To consume the server in a fast way you can use for expample `Postman` an extension for Google Chrome.
+To consume the server in a fast way you can use for example `Postman` an extension for Google Chrome.
 
 ---
 
@@ -28,3 +28,7 @@ Post request at `/passengers` will allow registering passengers. It will parse t
 Get request at `/reserve/:passengerPassportNumber/:seatNumber` will try to bind a passenger to a seat depending on internal rules
 ***
 Get request at `/reserve/random/:passengerPassportNumber` will return bind a passenger to a random available seat.
+
+---
+
+# STILL IN DEVELOPMENT
