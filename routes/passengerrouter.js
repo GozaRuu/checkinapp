@@ -12,7 +12,7 @@ passengerRouter.route('/')
 .post(function (req, res, next) {
     Passengers.create(req.body, function (err, passenger) {
         if (err) {
-            console.log('error: Passenger not added');
+            console.log('Error: Passenger not added');
             res.json({
                 sucess: false,
                 error: JSON.stringify(err)
