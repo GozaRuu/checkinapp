@@ -49,6 +49,54 @@ reserveRouter.route('/:passId/:seatId')
                             });
                         });
 
+                        //set timer (3min) to undo the update if the passenger didn't pay
+
+                        setTimeout(function(){
+                            //check if passenger.paid is true or false
+                            Passengers.findOne({passportNumber: req.params.passId}, function (err, passenger) {
+                                if (err) throw err;
+                                //undo passenger reservation
+                                if (!passenger.paid) {
+                                    Passengers.findOneAndUpdate({passportNumber: req.params.passId}, {
+                                        $set: {seat : ''}
+                                    }, {
+                                        new: true
+                                    }, function (err, passenger) {
+                                        if (err) throw err;
+                                        res.json({
+                                            sucess: false,
+                                            error: "passenger didn't pay for reservation seat",
+                                            passenger: req.params.passId,
+                                            seat: req.params.seatId
+                                        });
+                                    });
+
+                                    //make the seat availble
+                                    Seats.findOneAndUpdate({number: req.params.seatId}, {
+                                        $set: {available : true}
+                                    }, {
+                                        new: true
+                                    }, function (err, seat) {
+                                        if (err) throw err;
+                                        res.json({
+                                            sucess: false,
+                                            error: "passenger didn't pay for reservation seat",
+                                            passenger: req.params.passId,
+                                            seat: req.params.seatId
+                                        });
+                                    });
+                                } else {
+                                    res.json({
+                                        sucess: true,
+                                        description: "passenger successfully get his seat",
+                                        passenger: req.params.passId,
+                                        seat: req.params.seatId
+                                    });
+                                }
+
+                            }
+                        }, 180000);
+
                     } else {
                         console.log('Error: Reservation not completed');
                         res.json({
