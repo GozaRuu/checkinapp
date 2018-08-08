@@ -32,12 +32,17 @@ Get request at `/reserve/random/:passengerPassportNumber` will return bind a pas
 ---
 
 # Add data to the database 
-Open mogodb shell: open a command-line instance by running :
+Open mogodb shell: open a command-line instance by typing :
 `mongo`
+
 then type:
 `db.use checkinapp`
+
 you can add data folowing this example:
+
 Add a seat: `db.seats.insertOne({number: "N88", price: "454", available: true})`
+
 Add a passenger: `db.passengers.insertOne({passportNumber: "TN78787", name: "kais", age: "24", checkin: true, seat: "", paid :false})`
+
 
 # STILL IN DEVELOPMENT
